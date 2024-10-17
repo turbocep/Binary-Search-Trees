@@ -82,9 +82,33 @@ class Tree
       return current if current.nil?
     end
   end
+
+  def level_order
+    # It seems impractical to implement this with recursion.
+    return nil if root.nil?
+    queue = [root]
+    values = []
+    until queue.length == 0
+      # Add left child to queue if it exists.
+      queue.push(queue.first.left) unless queue.first.left.nil?
+      # Add right child to queue if it exists.
+      queue.push(queue.first.right) unless queue.first.right.nil?
+      #Action step
+      if block_given?
+        values.push(yield(queue.shift))
+      else
+        values.push(queue.shift.data)
+      end
+    end
+    values
+  end
 end
 
 array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 
 tree.pretty_print
+p tree.level_order
+
+
+
