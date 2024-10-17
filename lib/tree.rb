@@ -4,25 +4,87 @@ class Tree
   attr_accessor :root
 
   def initialize(array)
-    unique_array = array.uniq.sort
-    self.root = build_balanced_tree(unique_array, 0, unique_array.length - 1)
+    array = array.uniq.sort
+    self.root = build_tree(array, 0, array.length - 1)
   end
 
-  def build_balanced_tree(sorted_array, start, stop)
+  def build_tree(array, start, stop)
     return nil if start > stop
-
+      
     mid = start + ((stop - start) / 2).to_i
 
-    root = Node.new(sorted_array[mid])
-    p root
+    root = Node.new(array[mid])
 
-    root.left = build_balanced_tree(sorted_array, start, mid - 1)
-    root.right = build_balanced_tree(sorted_array, mid + 1, stop)
-    
-    return root
+    root.left = build_tree(array, start, mid - 1)
+    root.right = build_tree(array, mid + 1, stop)
+
+    root
+  end
+
+  def pretty_print(node = @root, prefix = '', is_left = true)
+    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+    puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
+    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
+  end
+
+  def insert(value)
+    return self.root = Node.new(value) if root.nil?
+
+    current = root
+    loop do
+      if current.data > value
+        return current.left = Node.new(value) if current.left.nil?
+        current = current.left
+      elsif current.data < value
+        return current.right = Node.new(value) if current.right.nil?
+        current = current.right
+      end
+    end
+  end
+
+  # Used to get successor for delete method.
+  def get_successor(curr)
+    curr = curr.right
+    until curr.nil? || curr.left.nil?
+      curr = curr.left
+    end
+    curr
+  end
+
+  def delete(x, root)
+    return root if root.nil?
+
+    if root.data > x
+      root.left = delete(x, root.left)
+    elsif root.data < x
+      root.right = delete(x, root.right)
+    else
+      return root.right if root.left.nil?
+      return root.left if root.right.nil?
+
+      succ = get_successor(root)
+      root.data = succ.data
+      root.left = delete(succ.data, root.right)
+    end
+    root
+  end
+
+  # Returns node with given value.
+  def find(value)
+    # Should I use recursion? 
+    current = root
+    loop do
+      return current if current.data == value
+      current = current.left if current.data > value
+
+      current = current.right if current.data < value
+
+      return current if current.nil?
+    end
   end
 end
 
-tree = Tree.new([5, 4, 3, 2, 1])
+array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
+tree = Tree.new(array)
 
-p tree.root
+tree.pretty_print
