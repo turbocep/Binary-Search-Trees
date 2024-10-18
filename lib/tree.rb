@@ -157,14 +157,13 @@ class Tree
     end.compact
   end
 
-  # def height(node = root, &block)
-  #   return -1 if node.nil?
+  def height(node = root, &block)
+    furthest_leaf = leaf_nodes.map do | leaf |
+      depth(root, leaf)
+    end.max
 
-  #   # Find depth of every leaf node
-  #   inorder(node, &block) do | node |
-  #     if node.left.nil? && node.right.nil?
-
-  # end
+    furthest_leaf - depth(root, node)
+  end
 
   def depth(root, node)
     return -1 if root.nil?
@@ -184,7 +183,7 @@ array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 
 tree.pretty_print
-p tree.leaf_nodes
+p tree.height(tree.find(6345))
 
 
 
