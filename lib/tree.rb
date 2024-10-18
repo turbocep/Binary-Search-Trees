@@ -148,13 +148,43 @@ class Tree
       values.push(node.data)
     end
   end
+
+  def leaf_nodes
+    inorder do | node |
+      if node.left.nil? && node.right.nil?
+        node
+      end
+    end.compact
+  end
+
+  # def height(node = root, &block)
+  #   return -1 if node.nil?
+
+  #   # Find depth of every leaf node
+  #   inorder(node, &block) do | node |
+  #     if node.left.nil? && node.right.nil?
+
+  # end
+
+  def depth(root, node)
+    return -1 if root.nil?
+
+    distance = -1
+
+    return distance + 1 if root == node
+    distance = depth(root.left, node)
+    return distance + 1 if distance >= 0
+    distance = depth(root.right, node)
+    return distance + 1 if distance >= 0
+    return distance
+  end
 end
 
 array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 
 tree.pretty_print
-p tree.postorder { |node| node.data}
+p tree.leaf_nodes
 
 
 
