@@ -125,7 +125,7 @@ class Tree
     if block
       values.push(block.call(node))
     else
-      values.push(node)
+      values.push(node.data)
     end
 
     preorder(node.left, values, &block)
@@ -177,13 +177,57 @@ class Tree
     return distance + 1 if distance >= 0
     return distance
   end
+
+  def balanced?
+    # Might not be optimal, but I'm going to keep this.
+    leaf_depths = leaf_nodes.map do | leaf |
+      depth(root, leaf)
+    end.sort
+    # Tree is assumed balanced if there's less than two leaf nodes.
+    return true if leaf_depths.length < 2
+    return leaf_depths[-1] <= leaf_depths[0] + 1
+  end
+
+  def rebalance
+    # Inorder returns sorted tree.
+    new_tree = inorder
+    self.root = build_tree(new_tree, 0, new_tree.length - 1)
+  end
 end
 
-array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
-tree = Tree.new(array)
 
+#Driver Script:
+tree = Tree.new(Array.new(15) { rand(1..100) })
 tree.pretty_print
-p tree.height(tree.find(6345))
+puts "Tree balanced?: #{tree.balanced?}"
+puts "Level-Order:"
+p tree.level_order
+puts "Preorder:"
+p tree.preorder
+puts "Inorder:"
+p tree.inorder
+puts "Postorder:"
+p tree.postorder
+puts "Inserting elements to unbalance tree:"
+tree.insert(105)
+tree.insert(1011)
+tree.insert(103)
+tree.insert(108)
+puts "Tree balanced?: #{tree.balanced?}"
+tree.pretty_print
+puts "rebalancing tree:"
+tree.rebalance
+tree.pretty_print
+puts "Tree balanced?: #{tree.balanced?}"
+puts "Level-Order:"
+p tree.level_order
+puts "Preorder:"
+p tree.preorder
+puts "Inorder:"
+p tree.inorder
+puts "Postorder:"
+p tree.postorder
+
 
 
 
