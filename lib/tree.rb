@@ -102,13 +102,59 @@ class Tree
     end
     values
   end
+
+  def inorder(node = root, values = [], &block)
+    return nil if node.nil?
+
+    inorder(node.left, values, &block)
+
+    if block_given?
+      values.push(block.call(node))
+    else
+      values.push(node.data)
+    end
+
+    inorder(node.right, values, &block)
+
+    values
+  end
+
+  def preorder(node = root, values = [], &block)
+    return if node.nil?
+
+    if block
+      values.push(block.call(node))
+    else
+      values.push(node)
+    end
+
+    preorder(node.left, values, &block)
+
+    preorder(node.right, values, &block)
+
+    values
+  end
+
+  def postorder(node = root, values = [], &block)
+    return if node.nil?
+
+    postorder(node.left, values, &block)
+
+    postorder(node.right, values, &block)
+
+    if block
+      values.push(block.call(node))
+    else
+      values.push(node.data)
+    end
+  end
 end
 
 array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 
 tree.pretty_print
-p tree.level_order
+p tree.postorder { |node| node.data}
 
 
 
